@@ -25,7 +25,7 @@
                 <div class="dropdown-about-menu hidden absolute bg-white shadow-md rounded mt-2">
                     <a href="{{route('upload')}}" class="block px-4 py-2 hover:bg-gray-100">Trang chủ</a>
                     <a href="#" class="block px-4 py-2 hover:bg-gray-100">Liên hệ</a>
-                    <a href="{{route('gallery')}}" class="block px-4 py-2 hover:bg-gray-100">Thư viện</a>
+                    <a href="" class="block px-4 py-2 hover:bg-gray-100">Thư viện</a>
                 </div>
             </li>
             <li>
