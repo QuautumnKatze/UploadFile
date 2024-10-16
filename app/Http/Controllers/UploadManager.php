@@ -14,32 +14,23 @@ class UploadManager extends Controller
     }
     public function store(Request $request)
     {
-        $downloadLinks = [];
         if ($request->hasFile('files')) {
             $files = $request->file('files');
             foreach ($files as $uploadedFile) {
-                $existingFile = galleries::where('file_name', $uploadedFile->getClientOriginalName())->first();
-
-                if (!$existingFile) {
-                    $fileName = $uploadedFile->getClientOriginalName();
-                    $filePath = 'public/uploads/' . $fileName;
-                    $file = new galleries();
-                    $file->file_name = $fileName;
-                    $file->file_path = $filePath;
-                    $file->file_type = $uploadedFile->getClientMimeType();
-                    $file->file_size = $uploadedFile->getSize();
-                    $file->save();
-                    $uploadedFile->move(public_path('uploads'), $fileName);
-
-                } else {
-                    continue;
-                }
+                $fileName = $uploadedFile->getClientOriginalName();
+                $filePath = 'public/uploads/' . $fileName;
+                $file = new galleries();
+                $file->file_name = $fileName;
+                $file->file_path = $filePath;
+                $file->file_type = $uploadedFile->getClientMimeType();
+                $file->file_size = $uploadedFile->getSize();
+                $file->save();
+                $uploadedFile->move(public_path('uploads'), $fileName);
             }
         }
 
         return response()->json([
             'message' => 'Tải danh sách Files thành công',
-            'downloadLinks' => $downloadLinks
         ]);
     }
 
@@ -48,6 +39,4 @@ class UploadManager extends Controller
         $galleries = galleries::all();
         return view('gallery', compact('galleries'));
     }
-
-
 }
