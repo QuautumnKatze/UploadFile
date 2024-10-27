@@ -144,6 +144,7 @@
         });
         const uploadedFiles = [];
 
+        // Xử lý upload khi chọn file từ máy tính
         $(document).ready(function () {
             $('#fileInput').on('change', function (event) {
                 const files = event.target.files;
@@ -231,6 +232,100 @@
                 document.getElementById('listDownload').classList.add('hidden');
             });
         });
+
+        // XỬ lý upload khi kéo thả file
+        $(document).ready(function () {
+            const dropZone = document.getElementById('uploadModal');
+
+            // Ngăn chặn hành động mặc định khi kéo và thả
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            // Thêm class khi kéo vào vùng thả
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => dropZone.classList.add('hover'), false);
+            });
+
+            // Xóa class khi rời vùng thả
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => dropZone.classList.remove('hover'), false);
+            });
+
+            // Xử lý sự kiện drop
+            dropZone.addEventListener('drop', handleDrop, false);
+
+            function handleDrop(e) {
+                const files = e.dataTransfer.files;
+                handleFiles(files);
+            }
+
+            // Hàm xử lý các file được kéo và thả vào
+            function handleFiles(files) {
+                [...files].forEach(uploadFile);
+                [...files].forEach(previewFile);
+            }
+
+            // Hàm xử lý upload file bằng AJAX
+            function uploadFile(file) {
+                const formData = new FormData();
+                formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
+                formData.append('files[]', file);
+
+                $.ajax({
+                    url: '/upload',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        toastr.success(response.message);
+                        response.downloadLinks.forEach(function (link) {
+                            const linkDiv = `
+                    <div class="flex justify-center items-center mt-2 flex">
+                        <input class="border p-2 w-80 max-w-lg" readonly type="text" value="${link}"/>
+                        <button class="bg-gray-200 p-2 ml-2" onclick="copyToClipboard('${link}')">SAO CHÉP</button>
+                    </div>
+                    `;
+                            $('#listDownload').append(linkDiv);
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error:', error);
+                        alert(`Error: ${xhr.responseText}`);
+                    }
+                });
+            }
+
+            // Hàm hiển thị preview ảnh trước khi upload
+            function previewFile(file) {
+                const fileDiv = $('<div class="relative"></div>');
+                fileDiv.append(`
+                <img alt="${file.name}" class="border w-24 h-24 object-cover" src="${URL.createObjectURL(file)}" width="100"/>
+                <button class="absolute top-0 left-0 bg-white rounded-full w-4 h-4 flex items-center justify-center shadow hover:shadow-md transition-shadow duration-300">
+                    <i class="fas fa-times text-black-250 text-xs" onclick="removeFile(this)"></i>
+                </button>
+            `);
+
+                $('#gallery').append(fileDiv);
+            }
+
+            document.getElementById('closeModal').addEventListener('click', function () {
+                document.getElementById('uploadModal').classList.add('hidden');
+                $('#gallery').empty();
+                uploadedFiles.length = 0;
+                document.getElementById('autoDeleteSection').classList.add('hidden');
+                document.getElementById('uploadBtn').classList.add('hidden');
+                document.getElementById('modalOverlay').classList.add('hidden');
+                document.getElementById('listDownload').classList.add('hidden');
+            });
+        });
+
 
         function copyToClipboard(text) {
             // Tạo một thẻ input tạm thời để chứa nội dung cần sao chép
