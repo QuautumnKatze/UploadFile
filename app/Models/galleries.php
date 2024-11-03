@@ -12,7 +12,9 @@ class galleries extends Model
         "file_name",
         "file_path",
         "file_type",
-        "file_size"
+        "file_size",
+        "uid",
+        "expired_date"
     ];
     protected $primaryKey = "id";
     protected $table = "galleries";

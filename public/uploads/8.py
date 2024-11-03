@@ -1,0 +1,15 @@
+import cv2
+import numpy as np
+img = cv2.imread("D:/test.png")
+cv2.putText(img, "Hello world", (100, 200), cv2.FONT_HERSHEY_SCRIPT_COMPLEX, 4, (209,242,79), 5)
+cv2.line(img, (450,100), (800,100), (0,255,0),20)
+cv2.arrowedLine(img, (1100, 400), (1100, 600), (0,255,255),20)
+cv2.circle(img, (80,440), 60, (0,0,255), -1)
+cv2.ellipse(img, (450,540), (200,100),45,0,360, (255,255,0),-1)
+cv2.rectangle(img, (620,190),(950,350), (255,0,255),-1)
+pts = np.array([[389,569],[220,660],[790,990],[649,559]], np.int32)
+pts = pts.reshape((-1,1,2))
+img = cv2.polylines(img,[pts],True,(0,255,255),12)
+cv2.imshow("display", img)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
